@@ -305,16 +305,3 @@ level = start_game()
 game = game('levels',level)
 size = game.load_size()
 screen = pygame.display.set_mode(size)
-while 1:
-    if game.is_completed(): display_end(screen)
-    print_game(game.get_matrix(),screen)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT: sys.exit(0)
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP: game.move(0,-1, True)
-            elif event.key == pygame.K_DOWN: game.move(0,1, True)
-            elif event.key == pygame.K_LEFT: game.move(-1,0, True)
-            elif event.key == pygame.K_RIGHT: game.move(1,0, True)
-            elif event.key == pygame.K_q: sys.exit(0)
-            elif event.key == pygame.K_d: game.unmove()
-    pygame.display.update()
