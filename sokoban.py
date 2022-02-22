@@ -1,9 +1,11 @@
 #!../bin/python
 
+# !!!!!!!!!!! Need to install with pip pygame and queues
+
 import sys
 import pygame
 import string
-import Queue
+import queue
 
 class game:
 
@@ -20,11 +22,11 @@ class game:
             return False
 
     def __init__(self,filename,level):
-        self.queue = Queue.LifoQueue()
+        self.queue = queue.LifoQueue()
         self.matrix = []
 #        if level < 1 or level > 50:
         if level < 1:
-            print "ERROR: Level "+str(level)+" is out of range"
+            print("ERROR: Level "+str(level)+" is out of range")
             sys.exit(1)
         else:
             file = open(filename,'r')
@@ -43,7 +45,7 @@ class game:
                             elif c == '\n': #jump to next row when newline
                                 continue
                             else:
-                                print "ERROR: Level "+str(level)+" has invalid value "+c
+                                print("ERROR: Level "+str(level)+" has invalid value "+c)
                                 sys.exit(1)
                         self.matrix.append(row)
                     else:
@@ -74,7 +76,7 @@ class game:
         if self.is_valid_value(content):
             self.matrix[y][x] = content
         else:
-            print "ERROR: Value '"+content+"' to be added is not valid"
+            print("ERROR: Value '"+content+"' to be added is not valid")
 
     def worker(self):
         x = 0
@@ -266,7 +268,7 @@ def ask(screen, question):
   "ask(screen, question) -> answer"
   pygame.font.init()
   current_string = []
-  display_box(screen, question + ": " + string.join(current_string,""))
+  display_box(screen, question + ": " + "".join(current_string))
   while 1:
     inkey = get_key()
     if inkey == pygame.K_BACKSPACE:
@@ -277,16 +279,16 @@ def ask(screen, question):
       current_string.append("_")
     elif inkey <= 127:
       current_string.append(chr(inkey))
-    display_box(screen, question + ": " + string.join(current_string,""))
-  return string.join(current_string,"")
+    display_box(screen, question + ": " + "".join(current_string))
+  return "".join(current_string)
 
 def start_game():
     start = pygame.display.set_mode((320,240))
     level = ask(start,"Select Level")
-    if level > 0:
-        return level
+    if int(level) > 0:
+        return int(level)
     else:
-        print "ERROR: Invalid Level: "+str(level)
+        print("ERROR: Invalid Level: "+str(level))
         sys.exit(2)
 
 wall = pygame.image.load('images/wall.png')
