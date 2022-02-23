@@ -54,26 +54,12 @@ def breath_first_search():
         saved_state = copy.deepcopy(current)
 
         for dir in Direction:
-            #print("GOING FROM " + str(dir))
-            #print(game.get_matrix())
-            #print("XDD " + str(dir) + " + " + str(game.can_move(dir.value[0], dir.value[1])))
-            #print(game.get_matrix())
-            #print(current)
             game.move(dir.value[0], dir.value[1], False)
-            #print(game.get_matrix())
-            #print(current)
-            #print(test)
-            #print("TO")
-            #print(game.get_matrix())
-            #print("")
-            #print("")
             new_actions = copy.deepcopy(actions)
             new_actions.append(dir)
             queue.append((copy.deepcopy(game.get_matrix()), new_actions))
             game.set_matrix(saved_state)
             saved_state = copy.deepcopy(saved_state)
-            #print(current)
-            #print(game.get_matrix())
 
 initial_state = game.get_matrix().copy()
 
