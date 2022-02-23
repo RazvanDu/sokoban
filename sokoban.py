@@ -62,6 +62,9 @@ class game:
     def get_matrix(self):
         return self.matrix
 
+    def set_matrix(self, new_matrix):
+        self.matrix = new_matrix
+
     def print_matrix(self):
         for row in self.matrix:
             for char in row:
