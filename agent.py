@@ -1,9 +1,3 @@
-from sokoban import *
-import copy
-import sys
-import time
-from queue import PriorityQueue
-
 from enum import Enum
 
 class Algorithm(Enum):
@@ -11,7 +5,13 @@ class Algorithm(Enum):
     ASTAR_SEARCH_1 = 1
     ASTAR_SEARCH_2 = 2
 
-chosen_algorithm = Algorithm.ASTAR_SEARCH_2
+chosen_algorithm = Algorithm.BREATH_FIRST_SEARCH
+
+from sokoban import *
+import copy
+import sys
+import time
+from queue import PriorityQueue
 
 class OrderedEnum(Enum):
      def __ge__(self, other):
