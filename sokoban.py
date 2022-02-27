@@ -6,6 +6,9 @@ import sys
 import pygame
 import string
 import queue
+import os
+os.environ['SDL_AUDIODRIVER'] = 'dsp'
+
 
 class game:
 

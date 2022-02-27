@@ -3,13 +3,43 @@ import pygame.event
 from sokoban import *
 import time
 import copy
+import sys
+import collections
+import numpy as np
+import heapq
+import time
+from queue import PriorityQueue
 
 from enum import Enum
-class Direction(Enum):
+
+class OrderedEnum(Enum):
+     def __ge__(self, other):
+         if self.__class__ is other.__class__:
+             return self.value >= other.value
+         return NotImplemented
+     def __gt__(self, other):
+         if self.__class__ is other.__class__:
+             return self.value > other.value
+         return NotImplemented
+     def __le__(self, other):
+         if self.__class__ is other.__class__:
+             return self.value <= other.value
+         return NotImplemented
+     def __lt__(self, other):
+         if self.__class__ is other.__class__:
+             return self.value < other.value
+         return NotImplemented
+
+class Direction(OrderedEnum):
     UP = (0,-1)
     DOWN = (0,1)
     LEFT = (-1,0)
     RIGHT = (1,0)
+
+
+class Algorithm(Enum):
+    BFS = 0
+    UNIFORM_SEARCH = 1
 
 next_actions = []
 steps = 0
@@ -33,19 +63,14 @@ def breath_first_search():
 
         steps += 1
 
-        print("AT STEP " + str(steps))
         print(actions)
-        print("HERE " + current_as_string)
 
         if current_as_string in visited:
             continue
 
         game.set_matrix(current)
 
-        #print("LOL " + current_as_string + " + " + str(game.is_completed()))
-
         if game.is_completed():
-            print("RETURNED")
             print(actions)
             return actions
 
@@ -61,9 +86,87 @@ def breath_first_search():
             game.set_matrix(saved_state)
             saved_state = copy.deepcopy(saved_state)
 
+def distance(point_a, point_b):
+    return abs(point_a[0] - point_b[0]) + abs(point_a[1] - point_b[1])
+
+def h_function(matrix):
+
+    boxes = []
+    goals = []
+
+    x = 0
+    y = 0
+    for row in matrix:
+        for char in row:
+            if char == '$':
+                boxes.append((x,y))
+            if char == '.':
+                goals.append((x,y))
+            x = x + 1
+        x = 0
+        y = y + 1
+
+    total_dist = 0
+
+    for box in boxes:
+        for goal in goals:
+            total_dist += distance(box, goal)
+
+    return 0.01 * total_dist
+
+
+def astar_search():
+
+    global steps
+
+    visited = set()
+    queue = PriorityQueue()
+
+    queue.put((0 + h_function(game.get_matrix()), (0, (copy.deepcopy(game.get_matrix()), []))))
+
+    while queue:
+
+        popped_temp = queue.get()[1]
+
+        print("X " + str(popped_temp))
+
+        popped = popped_temp[1]
+        cost_so_far = popped_temp[0] + 1
+
+        current = popped[0]
+        current_as_string = '%'.join('!'.join(line) for line in current)
+        actions = popped[1]
+
+        steps += 1
+
+        print("TESTT " + str(steps))
+        print(actions)
+
+        if current_as_string in visited:
+            continue
+
+        game.set_matrix(current)
+
+        if game.is_completed():
+            print(actions)
+            return actions
+
+        visited.add(current_as_string)
+
+        saved_state = copy.deepcopy(current)
+
+        for dir in Direction:
+            game.move(dir.value[0], dir.value[1], False)
+            new_actions = copy.deepcopy(actions)
+            new_actions.append(dir)
+            queue.put((cost_so_far + h_function(game.get_matrix()), (cost_so_far, (copy.deepcopy(game.get_matrix()), new_actions))))
+            game.set_matrix(saved_state)
+            saved_state = copy.deepcopy(saved_state)
+
+
 initial_state = game.get_matrix().copy()
 
-next_actions = breath_first_search()
+next_actions = astar_search()
 
 game.set_matrix(initial_state)
 
