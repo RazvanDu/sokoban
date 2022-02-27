@@ -1,16 +1,17 @@
-import pygame.event
-
 from sokoban import *
-import time
 import copy
 import sys
-import collections
-import numpy as np
-import heapq
 import time
 from queue import PriorityQueue
 
 from enum import Enum
+
+class Algorithm(Enum):
+    BREATH_FIRST_SEARCH = 0
+    ASTAR_SEARCH_1 = 1
+    ASTAR_SEARCH_2 = 2
+
+chosen_algorithm = Algorithm.ASTAR_SEARCH_2
 
 class OrderedEnum(Enum):
      def __ge__(self, other):
@@ -35,11 +36,6 @@ class Direction(OrderedEnum):
     DOWN = (0,1)
     LEFT = (-1,0)
     RIGHT = (1,0)
-
-
-class Algorithm(Enum):
-    BFS = 0
-    UNIFORM_SEARCH = 1
 
 next_actions = []
 steps = 0
@@ -109,11 +105,17 @@ def h_function(matrix):
     total_dist = 0
 
     for box in boxes:
+        best_dist = 100000
         for goal in goals:
-            total_dist += distance(box, goal)
+            if chosen_algorithm == Algorithm.ASTAR_SEARCH_2:
+                total_dist += distance(box, goal)
+            elif chosen_algorithm == Algorithm.ASTAR_SEARCH_1:
+                best_dist = min(best_dist, distance(box, goal))
 
-    return 0.01 * total_dist
+        if chosen_algorithm == Algorithm.ASTAR_SEARCH_1:
+            total_dist += best_dist
 
+    return 100 * total_dist
 
 def astar_search():
 
@@ -166,7 +168,10 @@ def astar_search():
 
 initial_state = game.get_matrix().copy()
 
-next_actions = astar_search()
+if chosen_algorithm == Algorithm.ASTAR_SEARCH_1 or chosen_algorithm == Algorithm.ASTAR_SEARCH_2:
+    next_actions = astar_search()
+elif chosen_algorithm == Algorithm.BREATH_FIRST_SEARCH:
+    next_actions = breath_first_search()
 
 game.set_matrix(initial_state)
 
